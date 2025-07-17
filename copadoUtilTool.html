@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copado Package.xml Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .tool-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-header {
+            background: linear-gradient(135deg, #2a5298 0%, #667eea 100%);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-header:hover {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        
+        .tool-header h2 {
+            margin: 0;
+            border: none;
+            padding: 0;
+            font-size: 1.5em;
+        }
+        
+        .tool-toggle {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-toggle.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .tool-content {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-content.expanded {
+            padding: 30px;
+            max-height: 2000px;
+        }
+        
+        .tool-description {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            color: #0066cc;
+        }
+        
+        .quick-nav {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .quick-nav h3 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+            overflow: auto;
+            max-height: 400px;
+            max-width: 100%;
+        }
+        
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+        
+        .query-output {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #495057;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            position: relative;
+        }
+        
+        .xml-output {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #495057;
+            white-space: pre;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 400px;
+            position: relative;
+            width: 100%;           /* Add this line */
+            max-width: 100%;       /* Add this line */
+            box-sizing: border-box; /* Add this line */
+        }
+        
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .output-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #2a5298;
+        }
+
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 100%;      /* Add this line */
+            overflow: hidden;     /* Add this line */
+        }
+        
+        .grid .section {          /* Add this new rule */
+            min-width: 0;         /* This prevents grid items from expanding */
+            overflow: hidden;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background: #e7f3ff;
+            border-left-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .alert-success {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+            color: #28a745;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .copy-notification.show {
+            transform: translateX(0);
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Copado Package.xml Generator</h1>
+            <p>Transform your Salesforce user stories into deployment-ready package.xml files</p>
+        </div>
+        
+        <div class="content">
+            <div class="quick-nav">
+                <h3>🛠️ Choose Your Tool</h3>
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="toggleTool('packageGenerator')">📦 Package Generator</button>
+                    <button class="nav-btn" onclick="toggleTool('xmlMerger')">🔄 XML Merger</button>
+                    <button class="nav-btn" onclick="toggleTool('xmlRemover')">➖ XML Remover</button>
+                </div>
+            </div>
+            
+            <div class="tool-section" id="packageGenerator">
+                <div class="tool-header" onclick="toggleSection('packageGenerator')">
+                    <h2>📦 Package.xml Generator from User Stories</h2>
+                    <span class="tool-toggle">▼</span>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-description">
+                        Generate package.xml files from Copado user stories. Perfect for creating deployment packages with both upsert and destructive changes.
+                    </div>
+                    
+                    <div class="instructions">
+                        <h3>📋 How to use:</h3>
+                        <ol>
+                            <li>Enter your user story numbers (one per line)</li>
+                            <li>Copy the generated SOQL query and run it in Salesforce</li>
+                            <li>Paste the results back here to generate XML files , (COPY FROM SF INSPECTOR AS EXCEL)</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>📝 Step 1: Enter User Story Numbers</h3>
+                        <div class="input-group">
+                            <label for="userStories">User Story Numbers (one per line):</label>
+                            <textarea id="userStories" rows="6" placeholder="US-001&#10;US-002&#10;US-003"></textarea>
+                        </div>
+                        <button class="btn" onclick="generateQuery()">Generate Query</button>
+                    </div>
+                    
+                    <div class="section" id="querySection" style="display: none;">
+                        <h3>🔍 Step 2: SOQL Query</h3>
+                        <div class="alert alert-info">
+                            Copy this query and run it in Salesforce Developer Console or Inspector tool.
+                        </div>
+                        <div class="output-header">
+                            <div class="output-title">Generated SOQL Query</div>
+                            <button class="btn btn-copy" onclick="copyToClipboard('queryOutput')">📋 Copy Query</button>
+                        </div>
+                        <div class="query-output" id="queryOutput"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>📊 Step 3: Data from Salesforce</h3>
+                        <div class="input-group">
+                            <label for="salesforceData">Paste the query results here ( COPY FROM SF INSPECTOR AS EXCEL ):</label>
+                            <textarea id="salesforceData" rows="8" placeholder="copado__Metadata_API_Name__c&#9;copado__Unique_ID__c&#10;ApexPage.ReviseProductPricing&#9;a2CUG000001MX812AG _delete_ApexPage.ReviseProductPricing"></textarea>
+                        </div>
+                        <button class="btn" onclick="generatePackageXml()">Generate Package.xml Files</button>
+                    </div>
+                    
+                    <div class="grid" id="outputSection" style="display: none;">
+                        <div class="section">
+                            <div class="output-header">
+                                <div class="output-title">📦 UPSERT XML</div>
+                                <button class="btn btn-copy" onclick="copyToClipboard('upsertOutput')">📋 Copy XML</button>
+                            </div>
+                            <div class="xml-output" id="upsertOutput"></div>
+                        </div>
+                        
+                        <div class="section">
+                            <div class="output-header">
+                                <div class="output-title">🗑️ DESTRUCTIVE CHANGES XML</div>
+                                <button class="btn btn-copy" onclick="copyToClipboard('destructiveOutput')">📋 Copy XML</button>
+                            </div>
+                            <div class="xml-output" id="destructiveOutput"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-section" id="xmlMerger">
+                <div class="tool-header" onclick="toggleSection('xmlMerger')">
+                    <h2>🔄 XML Merger</h2>
+                    <span class="tool-toggle">▼</span>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-description">
+                        Combine two package.xml files into one. Perfect for merging multiple deployment packages or consolidating user story packages.
+                    </div>
+                    
+                    <div class="grid">
+                        <div class="input-group">
+                            <label for="mergeXml1">First XML File:</label>
+                            <textarea id="mergeXml1" rows="8" placeholder="Paste your first package.xml here..."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="mergeXml2">Second XML File:</label>
+                            <textarea id="mergeXml2" rows="8" placeholder="Paste your second package.xml here..."></textarea>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="mergeXmlFiles()">🔄 Merge XML Files</button>
+                    
+                    <div id="mergeOutputSection" style="display: none; margin-top: 20px;">
+                        <div class="output-header">
+                            <div class="output-title">🔄 Merged XML</div>
+                            <button class="btn btn-copy" onclick="copyToClipboard('mergeOutput')">📋 Copy XML</button>
+                        </div>
+                        <div class="xml-output" id="mergeOutput"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-section" id="xmlRemover">
+                <div class="tool-header" onclick="toggleSection('xmlRemover')">
+                    <h2>➖ XML Component Remover</h2>
+                    <span class="tool-toggle">▼</span>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-description">
+                        Remove specific components from a package.xml file. Great for excluding test classes or specific components from deployments.
+                    </div>
+                    
+                    <div class="grid">
+                        <div class="input-group">
+                            <label for="removeMainXml">Main XML File:</label>
+                            <textarea id="removeMainXml" rows="8" placeholder="Paste your main package.xml here..."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="removeFromXml">Components to Remove:</label>
+                            <textarea id="removeFromXml" rows="8" placeholder="Paste the package.xml with components to remove..."></textarea>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="removeFromXml()">➖ Remove Components</button>
+                    
+                    <div id="removeOutputSection" style="display: none; margin-top: 20px;">
+                        <div class="output-header">
+                            <div class="output-title">➖ Updated XML</div>
+                            <button class="btn btn-copy" onclick="copyToClipboard('removeOutput')">📋 Copy XML</button>
+                        </div>
+                        <div class="xml-output" id="removeOutput"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="copy-notification" id="copyNotification">
+        Copied to clipboard! ✅
+    </div>
+    
+    <script>
+        function generateQuery() {
+            const userStoriesText = document.getElementById('userStories').value.trim();
+            if (!userStoriesText) {
+                alert('Please enter at least one user story number');
+                return;
+            }
+            
+            const userStories = userStoriesText.split('\n').filter(story => story.trim());
+            const storyNumbers = userStories.map(story => `'${story.trim()}'`).join(', ');
+            
+            const query = `SELECT copado__Metadata_API_Name__c, copado__Unique_ID__c
+FROM copado__User_Story_Metadata__c 
+WHERE copado__User_Story__r.Name IN (${storyNumbers})`;
+            
+            document.getElementById('queryOutput').textContent = query;
+            document.getElementById('querySection').style.display = 'block';
+            
+            // Smooth scroll to the query section
+            document.getElementById('querySection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function generatePackageXml() {
+            const salesforceData = document.getElementById('salesforceData').value.trim();
+            if (!salesforceData) {
+                alert('Please paste the Salesforce query results');
+                return;
+            }
+            
+            try {
+                const lines = salesforceData.split('\n').filter(line => line.trim());
+                if (lines.length < 2) {
+                    alert('Please ensure you have header row and at least one data row');
+                    return;
+                }
+                
+                // Skip header row
+                const dataLines = lines.slice(1);
+                
+                const upsertMetadata = {};
+                const destructiveMetadata = {};
+                
+                dataLines.forEach(line => {
+                    const columns = line.split('\t');
+                    if (columns.length >= 2) {
+                        const metadataApiName = columns[0].trim().replace(/"/g, '');
+                        const uniqueId = columns[1].trim().replace(/"/g, '');
+                        
+                        if (metadataApiName && metadataApiName !== 'copado__Metadata_API_Name__c') {
+                            const isDelete = uniqueId.includes('_delete_');
+                            const parts = metadataApiName.split('.');
+                            
+                            if (parts.length >= 2) {
+                                const metadataType = parts[0];
+                                const memberName = parts.slice(1).join('.');
+                                
+                                const targetMetadata = isDelete ? destructiveMetadata : upsertMetadata;
+                                
+                                if (!targetMetadata[metadataType]) {
+                                    targetMetadata[metadataType] = new Set();
+                                }
+                                targetMetadata[metadataType].add(memberName);
+                            }
+                        }
+                    }
+                });
+                
+                const upsertXml = generateXml(upsertMetadata);
+                const destructiveXml = generateXml(destructiveMetadata);
+                
+                document.getElementById('upsertOutput').textContent = upsertXml;
+                document.getElementById('destructiveOutput').textContent = destructiveXml;
+                document.getElementById('outputSection').style.display = 'grid';
+                
+                // Smooth scroll to the output section
+                document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                alert('Error processing data: ' + error.message);
+            }
+        }
+        
+        function parseXml(xmlString) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+            
+            if (xmlDoc.querySelector('parsererror')) {
+                throw new Error('Invalid XML format');
+            }
+            
+            const metadata = {};
+            const types = xmlDoc.querySelectorAll('types');
+            
+            types.forEach(type => {
+                const nameElement = type.querySelector('name');
+                if (nameElement) {
+                    const typeName = nameElement.textContent.trim();
+                    const members = type.querySelectorAll('members');
+                    
+                    if (!metadata[typeName]) {
+                        metadata[typeName] = new Set();
+                    }
+                    
+                    members.forEach(member => {
+                        const memberName = member.textContent.trim();
+                        if (memberName) {
+                            metadata[typeName].add(memberName);
+                        }
+                    });
+                }
+            });
+            
+            return metadata;
+        }
+        
+        function mergeXmlFiles() {
+            const xml1 = document.getElementById('mergeXml1').value.trim();
+            const xml2 = document.getElementById('mergeXml2').value.trim();
+            
+            if (!xml1 || !xml2) {
+                alert('Please provide both XML files to merge');
+                return;
+            }
+            
+            try {
+                const metadata1 = parseXml(xml1);
+                const metadata2 = parseXml(xml2);
+                
+                // Merge metadata
+                const mergedMetadata = {};
+                
+                // Add all from first XML
+                Object.keys(metadata1).forEach(type => {
+                    mergedMetadata[type] = new Set(metadata1[type]);
+                });
+                
+                // Add all from second XML
+                Object.keys(metadata2).forEach(type => {
+                    if (!mergedMetadata[type]) {
+                        mergedMetadata[type] = new Set();
+                    }
+                    metadata2[type].forEach(member => {
+                        mergedMetadata[type].add(member);
+                    });
+                });
+                
+                const mergedXml = generateXml(mergedMetadata);
+                document.getElementById('mergeOutput').textContent = mergedXml;
+                document.getElementById('mergeOutputSection').style.display = 'block';
+                
+                // Smooth scroll to the output
+                document.getElementById('mergeOutputSection').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                alert('Error merging XML files: ' + error.message);
+            }
+        }
+        
+        function removeFromXml() {
+            const mainXml = document.getElementById('removeMainXml').value.trim();
+            const removeXml = document.getElementById('removeFromXml').value.trim();
+            
+            if (!mainXml || !removeXml) {
+                alert('Please provide both XML files');
+                return;
+            }
+            
+            try {
+                const mainMetadata = parseXml(mainXml);
+                const removeMetadata = parseXml(removeXml);
+                
+                // Remove components
+                const resultMetadata = {};
+                
+                Object.keys(mainMetadata).forEach(type => {
+                    resultMetadata[type] = new Set(mainMetadata[type]);
+                    
+                    if (removeMetadata[type]) {
+                        removeMetadata[type].forEach(memberToRemove => {
+                            resultMetadata[type].delete(memberToRemove);
+                        });
+                    }
+                    
+                    // Remove empty types
+                    if (resultMetadata[type].size === 0) {
+                        delete resultMetadata[type];
+                    }
+                });
+                
+                const resultXml = generateXml(resultMetadata);
+                document.getElementById('removeOutput').textContent = resultXml;
+                document.getElementById('removeOutputSection').style.display = 'block';
+                
+                // Smooth scroll to the output
+                document.getElementById('removeOutputSection').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                alert('Error removing components: ' + error.message);
+            }
+        }
+        
+        function generateXml(metadata) {
+            if (Object.keys(metadata).length === 0) {
+                return '<?xml version="1.0" encoding="UTF-8"?>\n<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n  <!-- No metadata found -->\n  <version>57.0</version>\n</Package>';
+            }
+            
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n';
+            
+            // Sort metadata types alphabetically
+            const sortedTypes = Object.keys(metadata).sort();
+            
+            sortedTypes.forEach(type => {
+                xml += '  <types>\n';
+                
+                // Sort members alphabetically
+                const sortedMembers = Array.from(metadata[type]).sort();
+                sortedMembers.forEach(member => {
+                    xml += `    <members>${member}</members>\n`;
+                });
+                
+                xml += `    <name>${type}</name>\n`;
+                xml += '  </types>\n';
+            });
+            
+            xml += '  <version>57.0</version>\n</Package>';
+            return xml;
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showCopyNotification();
+            }).catch(err => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyNotification();
+                } catch (err) {
+                    alert('Failed to copy to clipboard');
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+        
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        function toggleSection(toolId) {
+            const section = document.getElementById(toolId);
+            const content = section.querySelector('.tool-content');
+            const toggle = section.querySelector('.tool-toggle');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('rotated');
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('rotated');
+            }
+        }
+        
+        function toggleTool(toolId) {
+            // Close all sections first
+            const allSections = document.querySelectorAll('.tool-section');
+            allSections.forEach(section => {
+                const content = section.querySelector('.tool-content');
+                const toggle = section.querySelector('.tool-toggle');
+                content.classList.remove('expanded');
+                toggle.classList.remove('rotated');
+            });
+            
+            // Open the selected section
+            const selectedSection = document.getElementById(toolId);
+            const content = selectedSection.querySelector('.tool-content');
+            const toggle = selectedSection.querySelector('.tool-toggle');
+            
+            content.classList.add('expanded');
+            toggle.classList.add('rotated');
+            
+            // Scroll to the section
+            selectedSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Auto-resize textareas
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                // Set initial properties for specific textareas
+                if (textarea.id === 'salesforceData' || textarea.id === 'mergeXml1' || 
+                    textarea.id === 'mergeXml2' || textarea.id === 'removeMainXml' || 
+                    textarea.id === 'removeFromXml') {
+                    // Set fixed height and ensure proper scrolling
+                    textarea.style.height = '200px'; // Fixed height
+                    textarea.style.overflow = 'auto';
+                    textarea.style.resize = 'vertical'; // Allow manual resize if needed
+                }
+                
+                textarea.addEventListener('input', function() {
+                    // For specific textareas that should have fixed dimensions
+                    if (this.id === 'salesforceData' || this.id === 'mergeXml1' || 
+                        this.id === 'mergeXml2' || this.id === 'removeMainXml' || 
+                        this.id === 'removeFromXml') {
+                        // Don't auto-resize height
+                        return;
+                    }
+                    
+                    // For other textareas, auto-resize with a max height
+                    this.style.height = 'auto';
+                    const newHeight = Math.min(this.scrollHeight, 400);
+                    this.style.height = newHeight + 'px';
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
